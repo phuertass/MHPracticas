@@ -1,0 +1,20 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}\large INTRODUCCION AL PROBLEMA ABORDADO}{2}{section.1}%
+\contentsline {section}{\numberline {2}\large ESQUEMA COMÚN}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}\large Representación de soluciones}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}\large Descripción de la función objetivo}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}\normalsize Descripción de los operadores comunes}{4}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}\small Operador de generación de vecino}{4}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}\small Generación de soluciones aleatorias}{4}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}\small Mecanismo de selección en los Algoritmos Genéticos}{5}{subsubsection.2.3.3}%
+\contentsline {subsubsection}{\numberline {2.3.4}\small Operadores de cruce}{6}{subsubsection.2.3.4}%
+\contentsline {subsubsection}{\numberline {2.3.5}\small Operador de mutación}{7}{subsubsection.2.3.5}%
+\contentsline {section}{\numberline {3}\large ESTRUCTURA DE MÉTODO DE BÚSQUEDA}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}\normalsize Pseudocódigo del método de búsqueda}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}\normalsize Algoritmos Genéticos y reemplazamiento}{9}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}\small Esquema de evolución}{9}{subsubsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.3}\normalsize Algoritmos Meméticos}{10}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}\small Búsqueda Local(BL)}{10}{subsubsection.3.3.1}%
+\contentsline {section}{\numberline {4}\large PROCEDIMIENTO CONSIDERADO PARA DESARROLLAR LA PRÁCTICA}{13}{section.4}%
+\contentsline {section}{\numberline {5}\large EXPERIMENTOS Y ANÁLISIS DE RESULTADOS}{15}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Tabla resumen}{17}{subsection.5.1}%

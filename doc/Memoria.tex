@@ -1,0 +1,747 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc} %Spanish input                                      
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs 
+\usepackage[spanish, es-tabla]{babel}        
+\usepackage{float}
+\usepackage{lscape}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{wrapfig}
+\usepackage{subfig}
+\usepackage{cite} % para contraer referencias
+\usepackage[hidelinks]{hyperref}
+\usepackage{xstring}
+\usepackage{listings}
+\usepackage{lipsum}
+\usepackage{courier}
+\usepackage{fancyhdr}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{setspace}
+
+
+%------------------------------------------------------------------------
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+%\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\newenvironment{proof}[1][Proof]{\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+\pagestyle{fancy}
+\setlength{\textwidth}{7.0in}
+\setlength{\oddsidemargin}{-0.35in}
+\setlength{\topmargin}{-0.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\parindent}{0.3in}
+\setlength{\pdfpagewidth}{88.184mm}
+\setlength{\pdfpageheight}{113.854mm}
+\setlength{\footskip}{12.0pt}
+
+
+\newcommand{\thelink}{\@empty}
+\newcommand{\link}[2]{%
+  \IfSubStr{#1}{:}{\renewcommand\thelink{#1}}{\renewcommand\thelink{#1:#2}}%
+  \href{\thelink}{\texttt{#2}}%
+}
+%--------------------------------------------------------------
+\geometry{
+  a4paper,
+  left=30mm,
+  right=30mm,
+  headheight=3cm,
+  top=2.5cm,
+  bottom=3.5cm,
+  footskip=0cm
+}
+\begin{document}[\normalsize]
+\begin{titlepage}
+\title{BIOGEOGRAPY BASED OPTIMIZATION}
+\author{Pablo Huertas Arroyo}
+\date{ \today }
+
+
+\maketitle
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=4]{LogoUGR.png}
+\end{figure}
+
+
+\hspace{-1.7cm}
+\newline Correo: \link{mailto}{phuertas@correo.ugr.es}
+\newline DNI:77033078Y
+\newline Grupo 3A, subgrupo 2
+\newline Horario: Lunes de 17:30 a 19:30
+\end{titlepage}
+
+\newpage
+\tableofcontents
+
+
+\newpage
+\section{\large RESUMEN}
+\large El problema elegido a abordar en esta practica es el siguiente:
+Problema de la mínima dispersión diferencial\textbf{(MDD)}.
+Es un problema de optimización combinatoria consistente en
+seleccionar un subconjunto M de m elementos (|M|=m) de un conjunto inicial N de n
+elementos (con n>m) de forma que se minimice la dispersión entre los elementos
+escogidos.
+
+Este problema tiene diferentes \textbf{aplicaciones en el campo de la optimización},
+como pueden ser la elección de la localización de elementos públicos, selección
+de grupos homogéneos, identificación de redes densas, reparto equitativo, problemas
+de flujo, etc
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{FormulaMinimizacion.png}
+\end{figure}
+
+donde:
+\begin{itemize}
+\item M es una solución al problema que consiste en un vector binario que indica los m
+elementos seleccionados
+\item$d_{ij}$ es la distancia existente entre los elementos i y j.
+\end{itemize}
+
+Para resolver este problema se utilizarán 50 casos seleccionados con distancias reales
+con, n entre {25,50,75,100,125,150}, y m enttre 2 y 45.
+
+\vspace{5mm} 
+
+La Dispersión de una Solución es la diferencia de los valores extremos, es decir,
+la diferencia de la sumas de las distancias de dichos puntos al resto de los puntos.
+Por ejemplo, si tenemos 8 puntos para colocar farmacias, y solo podemos colocar 4,
+\textbf{¿cuál es la forma de colocarlas, de forma que se reduzca la dispersión?}
+
+\vspace{5mm}
+
+Esto es lo que realizamos en esta prácticas, donde probaremos diferentes algoritmos
+para resolver el problema, y los compararemos entre ellos para poder extraer nuestras
+propias conclusiones.
+
+\newpage
+
+\subsection{\normalsize Exploración vs Explotacion}
+\subsection{\normalsize Equilibrio}
+Para esta práctica, he implementado 7 algoritmos distintos.
+
+
+
+\section{\large ADAPTACION DEL BBO AL PROBLEMA DE LA MINIMA DISPERSION DIFERENCIAL}
+
+\vspace{5mm}
+
+Los datos se encuentran en unos ficheros \emph{.txt}, donde hay una primera línea 
+que indica el numero de elementos \emph{n} y el número de elementos a seleccionar
+\emph{m} del problema.
+\newline Luego se encuentran \textbf{\emph{n*(n-1)/2}} líneas con el formato i,j,$d_{ij}$ que
+tienen el contenido de las \textbf{distancias entre los elementos}.
+\newline En mi caso, para los dos algoritmos he leido estos ficheros
+y he almacenado los datos en una matriz distancias completa, donde la diagonal es 0,
+y las triangulares superiores e inferiores son simétricas entre sí.
+
+\vspace{5mm}
+
+La posición (2,3) de la matriz distancias es la distancia entre los elementos 2 y 3,
+que a su vez es la misma que la posición (3,2).
+
+\vspace{5mm}
+
+La \textbf{representación de la solución} es un vector de enteros, donde la posición i-ésima
+es el numero del elemento que esta seleccionado.
+Mantengo en el conjunto de datos solución en la implementación el vector binario usado en la 
+practica anterior, para la reutilizacion de código.
+
+\vspace{5mm}
+
+Para la \textbf{factorización de la función objetivo}, a la hora de generar una nueva solución no
+es necesario volver a calcular por completo el vector de distancias para obtener la nueva
+dispersión. Basta con restar la distancia a cada elemento de la solución al elemento que 
+se ha quitado de la solución actual, y sumarle la distancia del nuevo elemento a todas las demás 
+de la solución.
+\newline Entonces,teniendo el vector de distancias actualizado, para saber la dispersión de dicho conjunto 
+de elementos restamos la mayor distancia de dicho vector con la menor
+
+\vspace{5mm}
+
+Debido a que se requiere aleatoriedad en ambos algoritmos, ya que son probabilísticos, he usado un vector de semillas, 
+donde en cada iteración que 
+realiza cada algoritmo se genera una nueva semilla, y se utiliza para generar nuevas soluciónes.
+El valor estático de la semilla sirve para que cada vez que se ejecute el algoritmo, se obtengan las mismas Soluciónes.
+
+También se pedía calcular el tiempo de ejecución de cada algoritmo, por lo que he usado objetos de la clase 
+\textbf{<chrono>} para tener una alta precisión en los tiempos, y los muestro en \textbf{segundos}.
+
+\vspace{5mm}
+
+Al finalizar cada algoritmo calculo el tiempo demorado por dicho algoritmo y la dispersión de la 
+mejor solución encontrada.
+
+\subsection{\large Descripción de la función objetivo}
+La función objetivo de este problema es la de encontrar la dispersión a partir de un vector de 
+booleanos donde la posición i-ésima es 1 si el elemento i-ésimo está seleccionado, y 0 en caso contrario.\\
+Para evaluar la función objetivo, se convierte internamente el vector de booleanos en una selección 
+de elementos de números enteros.\\
+Para ello, se recorre el vector de booleanos, y si la posición i-ésima es 1, se añade al final del vector de 
+seleccionados el elemento i-ésimo.\\
+Tenemos la matriz de distancias comentada anteriormente, y la selección de elementos, por lo
+que para evaluar la función objetivo, para cada elemento del vector de seleccionado, en la posición i-ésima
+del vector distancias, añadimos la distancia del elemento i-ésimo a todos los demás elementos del vector de seleccionados.\\
+Las posiciones se corresponden 1 a 1 en los vectores de seleccionados y distancias.
+\vspace{5mm}
+
+\begin{algorithm}
+  \scriptsize
+  \label{Algoritmo de Evaluacion de la Funcion Objetivo}
+  \caption{Algoritmo de Evaluación de la Función Objetivo}
+  \KwIn{distancias(vector), seleccionados(vector), m(matriz distancias)}% Parámetros de entrada
+  $distancias \leftarrow 0$\\
+  
+\vspace{3mm}
+
+\vspace{3mm}
+$Vector Distancias \leftarrow{\emph{GenerarVectorDistancias()}}$\\
+$Dispersion Comparacion \leftarrow{\emph{Calculardispersion(VectorDistancias)}}$\\
+\vspace{3mm}
+$Mejora \leftarrow {\textbf{TRUE}}$\\
+
+\For{$i \in Size(seleccionados)$}{
+  $a comparar \leftarrow i $\\
+  \For{$j \in Size(seleccionados)$}{
+    \If{$seleccionados[i] \neq acomparar$}{
+      $distancias[i] += m[acomparar][seleccionados[i]]$\\
+    }
+  }
+}
+\end{algorithm}
+
+\subsection{\normalsize Descripción de los operadores comunes}
+Hay ciertos operadores y funciones que son comunes para los algoritmos desarrollados en esta práctica,
+ya que por ejemplo la generación de soluciónes aleatorias es común y varios operadores 
+más, por lo que voy a desglosar uno a uno para entrar más en profundidad.
+
+\vspace{3mm}
+
+\subsubsection{\small Generación de soluciónes aleatorias}
+Para la generación de la primera solución aleatoria, utilizo una funcion para generar soluciónes 
+aleatorias, donde el numero de posibles elementos a escoger es emph{n} y el numero que finalmente son seleccionados 
+son emph{m}.
+
+\begin{algorithm}
+  \label{Algoritmo de Generacion de soluciónes Aleatorias}
+  \caption{Algoritmo de Generación de soluciónes Aleatorias}
+  \KwIn{n(número de puntos) m(número de puntos a seleccionar), semilla(número que simboliza una semilla estática) }% Parámetros de entrada
+  \KwOut{solución(vector de booleanos)}% Parámetros de salida
+\vspace{3mm}
+
+$solución \leftarrow \emptyset $\\
+$seleccionados \leftarrow \emptyset $\\
+\vspace{3mm}
+
+\While{$Size(seleccionados) < m$}{
+  $seleccionados \leftarrow \emph{Numero aleatorio que no esta en seleccionados} $\\
+  $solución \leftarrow \emph{seleccionados.back} $\\
+}
+\end{algorithm}
+
+\vspace{3mm}
+
+
+
+
+\newpage
+\section{\large PROPUESTA DE MEJORA DE LA METAHEURISTICA}
+aa
+\subsection{\normalsize Hibridacion con Enfriamiento Simulado}
+aa
+\subsubsection{\scriptsize Algoritmo de Enfriamiento Simulado}
+El algoritmo de Enfriamiento Simulado \emph{(Simulated Annealing)} es un algoritmo de búsqueda metaheuristica 
+para problemas de optimización global.\\
+El objetivo de este algoritmo es encontrar una solución optima o casi optima de un problema en un espacio 
+de búsqueda grande.\\
+Tiene un criterio probabilistco de aceptacion de soluciónes basado en Termodinamica.\\
+La forma que tiene de escapar de óptimos locales, es la posibilidad de aceptar soluciónes peores con una cierta probabilidad,
+la cual va disminuyendo conforme se va avanzando en el algoritmo hacia una buena solución.\\
+Tiene una filosofía de diversificar al principio e intensificar al final, es decir, al principio del algoritmo
+se evaluan multiples soluciónes distintas y se selecciona la mejor, y al final se intensifica la búsqueda
+explotandola.
+\vspace{5mm}
+
+El máximo de éxitos que se podrán generar como máximo en cada iteracion del algoritmo serán n.\\
+El máximo de vecinos que se podrán generar como máximo en cada iteracion del algoritmo serán 10*n.\\
+La constante $\mu$ tendra valor 0.3 en toda la ejecucion \\
+La temperatura inicial se calculará como... 
+\begin{equation}
+  \emph{To} = \frac{ \mu * C(So)  }{ - \ln( \varphi  )   }
+\end{equation}
+\newline siendo $\varphi$ = $\mu$
+
+\vspace {5mm}
+Beta se calculará de la forma...
+\begin{equation}
+  \beta = \frac{ t_i - t_f }{ t_i * t_f * n  }
+\end{equation}
+\newline siendo $t_i$ la temperatura inicial, $t_f$ la temperatura final y $n$ el tamaño de la solución.
+\vspace {5mm}
+
+Al final de cada iteracion se calcula la temperatura que se va a tomar como nueva, y esta 
+se calcula de la forma...
+\begin{equation}
+  t_{k1} = \frac{ t_k }{ 1 + (\beta * t_k) }
+\end{equation}
+\newline siendo $t_k$ la temperatura actual y $k$ el numero de iteracion.
+
+El número máximo de evaluaciones de la funcion objetivo del algoritmo completo serán \textbf{100000}
+
+\begin{algorithm}[h]
+  \scriptsize
+  \label{Algoritmo de Enfriamiento Simulado}
+  \caption{Algoritmo de Enfriamiento Simulado}
+  \KwIn{ TemperaturaInicial(temperatura inicial), TemperaturaFinal(temperatura final)}% Parámetros de entrada
+  \KwOut{ TemperaturaActual(temperatura actual) }% Parámetros de salida
+\vspace{3mm}
+
+$TemperaturaInicial \leftarrow CalcularTemperaturaInicial(\mu, \varphi, C(S_o))$\\
+$TemperaturaActual \leftarrow TemperaturaInicial $\\
+$TemperaturaFinal \leftarrow 10^{-3} $\\
+$nEnfriamientos \leftarrow  1000/n$\\
+$maxVecinos \leftarrow 10*n$\\
+$maxExitos \leftarrow n$\\
+\vspace {3mm}
+$iteraciones \leftarrow 0$\\
+$evaluaciones \leftarrow 0$\\
+$s_o \leftarrow \emph{CalcularsoluciónAleatoria}$\\
+$s_{mejor} \leftarrow S_o$\\
+\vspace {3mm}
+\While{$(TemperaturaActual > TemperaturaFinal) \&\& (iteraciones < nEnfriamientos) \&\& (nEvaluaciones < 100000)$}{
+  $exitos \leftarrow 0$\\
+  \For{$i \in 1 \ldots maxVecinos \ \&\& \ exitos < maxExitos$}{
+    $S_{Vecino} \leftarrow GenerarsoluciónVecinaAleatoria()$\\
+    $evaluaciones \leftarrow evaluaciones + 1$\\
+
+    \vspace {3mm}
+    $\Delta_{dispersion} \leftarrow dispersion(S_{vecino}) - dispersion(S_{actual})$\\
+
+    $\emph{Calculamos la probabilidad de que se acepte la nueva si es peor que la actual}$\\
+    $probabilidad \leftarrow e^{-\Delta_{dispersion} / TemperaturaActual}$\\
+
+    \vspace {3mm}
+    \If{$ (\Delta_{dispersion} <  0 ) \ or \ (GetRandomNumber(0,1) < probabilidad) $}{
+      $S_{actual} \leftarrow S_{vecino}$\\
+      $exitos \leftarrow exitos + 1$\\
+    }
+    
+    \vspace {3mm}
+
+    \If{$dispersion(S_{actual}) - dispersion(S_{mejor})$}{
+      $S_{mejor} \leftarrow S_{actual}$\\
+    }
+
+  }
+  $beta \leftarrow \emph{CalcularBeta}$\\
+  $TemperaturaActual \leftarrow CalcularTemperaturaActual(t_k, \beta, t_i, n)$\\
+  $iteraciones \leftarrow iteraciones + 1$\\
+}
+
+$return \ S_{mejor}$
+
+\end{algorithm}
+
+
+
+
+\subsubsection{\scriptsize Operador de mutacion}
+La mutacion consiste en modificar con cierta probabilidad uno o varios genes de la poblacion (en este caso de una solución)
+aleatoriamente. La probabilidad de mutacion es dada por la constante \emph{probabilidad 0.1}.
+Cuando muta un gen de un cromosoma, tenemos que encontrar otro gen del mismo cromosoma con el valor contrario,
+para mantener la factibilidad de la solución de dicho cromosoma.
+Por ejemplo, en una solución con 10 elementos donde se seleccionan 3, si se va a mutar el segundo seleccionado, tenemos que buscar uno de los 7
+elementos que no esten seleccionados de manera aleatoria y cambiar el valor de cada gen.
+El rango de elementos que pueden ser mutados, van desde 0 hasta el producto del numero de cromosomas por el numero de genes 
+por cromosoma.\\
+Si la poblacion tiene 10 cromosomas, y cada cromosoma 5 genes, si se genera para mutar el elemento 15, será el sexto gen del segundo cromosoma.
+
+\begin{algorithm}[H]
+  \scriptsize
+  \label{Operador de Mutacion}
+  \caption{Operador de Mutación}
+  \KwIn{ p(poblacion), prob(probabilidad) }% Parámetros de entrada
+  \KwOut{ pnueva(poblacion generada) }% Parámetros de salida
+\vspace{3mm}
+
+$rango$ $mutacion \leftarrow \emph{p.NumeroDeCromosomas()} \cdot \emph{p.NumeroDeGenesPorCromosoma()} $\\
+
+\For{$i \in Size(p)$}{
+  \If{$GenerarNumeroAleatorioEntre(0,1) < prob$}{
+    $\emph{Genero aleatoriamente un elemento en el rango de mutacion}$\\
+    $posicion \leftarrow GenerarNumeroAleatorioEntre(0,rango) $\\
+
+    $\emph{Para el elemento de la posicion generada, busco otro gen del mismo cromosoma 
+    con el valor contrario}$\\
+    $posicion2 \leftarrow \emph{Gen del mismo cromosoma aleatorio con valor contrario} $\\
+
+    $\emph{Swap(posicion, posicion2)}$\\
+  }
+
+}
+$return$ $pnueva$\\ 
+
+\end{algorithm}
+\vspace {3mm}
+
+En la ejecucion del algoritmo se realizan 10 iteraciones y cada BL como máximo hara \textbf{10000} evaluaciones 
+o no mejore la solución en todo el entorno.
+El valor usado para el numero de genes a mutar de la solución es \emph{t = 0.3}
+
+\newpage
+\subsection{\normalsize Hibridacion con Busqueda Local}
+\subsubsection{\scriptsize Busqueda Local}
+ Este algoritmo es un tipo de algoritmos de busqueda por trayectorias simples.
+\newline En este algoritmo, se empieza con una solución inicial completa y aleatoria,
+es decir, una Solución con \emph{M} elementos que no se repiten entre sí.
+El orden de estos elementos no es relevante.
+\vspace{5mm}
+%o Para el algoritmo BL, el métodos de exploración del entorno, el operador
+%de generación de vecino, la factorización de la BL y la generación de
+%Soluciónes aleatorias.
+\newline La idea es tras haber generado una completa Solución aleatoria válida, generar el 
+\textbf{vecindario completo} de la Solución actual, \textbf{desordenarlo aleatoriamente}, y recorrerlo 
+comparando en cada iteracion si se mejora la Dispersión.
+\newline Si se mejora la Dispersión, se \textbf{selecciona dicha Solución como Solución actual} y 
+se vuelve a generar el vecindario. Este proceso se hace hasta que no se mejore la Dispersión con 
+todo el vecindario generado o hasta que se hayan hecho \textbf{100000 evaluaciones de la funcion objetivo}.
+Es decir, comprobar 100000 veces si se mejora la Dispersión.
+\newline Como vemos este algoritmo se parece a Greedy en que ambos cuando encuentran una Solución 
+mejor que la anterior la seleccionan, y no se espera en este caso a recorrer todo el vecindario para 
+encontrar una mejor Solución. Es por eso que este algoritmo se llama Busqueda Local de \textbf{Primero el mejor}
+\vspace{5mm}
+\newline La generación de la primera Solución aleatoria se hace con un bucle que va generando 
+numeros aleatorios entre 0 y n-1, de forma que si no se ha añadido aún a la Solución, lo añade.
+Este proceso se repite hasta que el numero de elementos de la Solución sea igual a \emph{M}
+\newline Para la generación de vecinos, uso un vector de tuplas, que contienen el elemento que se 
+va a intercambiar y el elemento que se va a intercambiar y va a entrar a la Solución provisional.
+\newline Por ejemplo, si tengo {M}=6 y {N}=3, Solución provisional=(1,3,5), y genero el vecindario de esta Solución, 
+este será el vector de tuplas \newline {(1,0), (1,2) ,(1,4), (3,0), (3,2), (3,4), (5,0), (5,2), (5,4)}.
+\newline Entonces, desordena este vector aleatoriamente y se va intercambiando la posicion primera 
+de la tupla que se encuentra en la Solución por la segunda posicion de la tupla que no se encuentra en la Solución
+\newline La factorización es la misma que en el algoritmo greedy, cuando se intercambia un elemento de la Solución 
+por otro, en el vector distancias a cada elemento se le resta la distancia con el elemento que se elimina, 
+y se le suma la distancia con el elemento que se añade, ademas de añadir en la posicion del elemento añadido 
+la distancia con todos los demas de la Solución.
+
+\vspace{10mm}
+\newpage
+\maketitle \textbf{PSEUDOCÓDIGO DEL ALGORITMO DE BUSQUEDA LOCAL}
+\begin{algorithm}[H]
+  \scriptsize
+  \label{Algoritmo Busqueda Local}
+  \caption{Algoritmo de búsqueda local}
+  %\KwIn{n, m, solución}% Parámetros de entrada
+  $v \leftarrow 0 $,$ w\leftarrow 0 $\\
+  $ S\leftarrow D $\\
+  $T \leftarrow \emptyset $\\
+$solución \leftarrow \emptyset$\\
+$Elementos restantes \leftarrow V$\\
+$Dispersion Comparacion \leftarrow \emptyset$\\
+$Distancias \leftarrow \emptyset$\\
+$Dispersion \leftarrow \emptyset$\\
+\vspace{3mm}
+$Copia solución \leftarrow \emptyset$\\
+$Copia Distancia \leftarrow \emptyset$\\
+$Vecindario \leftarrow \emptyset$\\
+\vspace{3mm}
+\While{$solución < M$}{
+  \vspace{1mm}
+  $\emph{Vamos generando elementos aleatorios y los introducimos a la solución}$\\
+  $Elemento a introducir \leftarrow{\emph{GenerarElementoAleatorio(Elementos restantes)}}$\\
+  $Elementos restantes \leftarrow{Elementos restantes-{Elemento a introducir}}$\\
+  $solución \leftarrow{solución \cup {Elemento a introducir}}$\\
+}
+$\emph{Ya tenemos una solución completa y válida de tamaño M}$\\
+$\emph{El conjunto de elementos restantes solo contiene}$\\
+$\emph{los elementos que no están en la solución}$\\
+\vspace{3mm}
+$Vector Distancias \leftarrow{\emph{GenerarVectorDistancias()}}$\\
+$Dispersion Comparacion \leftarrow{\emph{Calculardispersion(VectorDistancias)}}$\\
+\vspace{3mm}
+$Mejora \leftarrow {\textbf{TRUE}}$\\
+
+\While{Mejora == TRUE {\&\&} iteraciones \textbf{$\leq$} 100000}{
+$\emph{Generamos un vecindario completo de la solución actual}$\\
+$\emph{ y lo mezclamos aleatoriamente}$\\
+$Vecindario \leftarrow {\emph{GenerarVecindario(solución)}}$\\
+$Vecindario \leftarrow {\emph{Desordenar(Vecindario)}}$\\
+\vspace{3mm}
+$\emph{Actualizamos las variables antes de recorrer el vecindario}$\\
+$Copia solución \leftarrow{solución}$\\
+$Mejora \leftarrow {\textbf{FALSE}}$\\
+$dispersion comparacion \leftarrow{Dispersion}$\\
+\vspace{3mm}
+\For{$i \in Size(Vecindario) {\&\&} mejora == FALSE $}{
+  $\emph{Recorremos el vecindario}$\\
+  $Copia solución \leftarrow{\emph{SustituirPunto(vecindario[i])}}$\\
+  $Copia Distancias \leftarrow{\emph{GenerarVectorDistancias(Copiasolución)}}$\\
+  $dispersion comparacion \leftarrow{\emph{Calculardispersion(CopiaDistancias)}}$\\
+}
+
+\eIf{dispersion comparacion < dispersion}{
+$\emph{Si la dispersion es mejor, actualizamos la solución}$\\
+$dispersion \leftarrow{\emph{dispersion comparacion}}$\\
+$solución \leftarrow{\emph{Copiasolución}}$\\
+$Mejora \leftarrow{\textbf{TRUE}}$\\
+$VectorDistancias \leftarrow{\emph{CopiaDistancias}}$\\
+$Restantes \leftarrow{\emph{CalcularRestantes(solución)}}$\\
+}{
+$\emph{Si la dispersion no es mejor, no actualizamos la solución,}$\\
+$\emph{y volvemos al estado anterior}$\\
+$Copia solución \leftarrow{solución}$\\
+$Copi Distancias \leftarrow{Vector Distancias}$\\
+}
+
+$Iteraciones \leftarrow{\emph{Iteraciones}+1}$\\
+}
+
+$\emph{Devolvemos la solución}$\\
+$\textbf {Return solución}$\\
+
+\end{algorithm}
+
+\newpage 
+
+\newpage
+\section {\large ESTUDIO EXPERIMENTAL Y ANÁLISIS DE RESULTADOS}
+En ambos algoritmos hemos usado el mismo vector de semillas, que en cada iteración 
+que ejecuta el programa el algoritmo, se coge la posicion i-esima del vector de semillas.
+\newline El vector semillas es (1,2,3,4,5)
+Por lo tanto en la primera iteracion se define la semilla como Random::Seed(1), y asi 
+sucesivamente.
+\newline Para comparar los resultados entre los dos algoritmos implementados en esta práctica, he hecho 
+una tabla donde se muestran, para cada algoritmo, el tiempo medio y la dispersion media conseguida entre 
+las 5 iteraciones conseguido con cada uno de los ficheros de datos.
+
+\vspace{10mm}
+\begin{figure}[h]
+  \centering
+   \subfloat[Tabla de resultados de Greedy]{
+     \includegraphics[width=0.3\textwidth]{TablaGreedy.png}}
+   \subfloat[Tabla de resultados de BL]{
+     \includegraphics[width=0.3\textwidth]{TablaBL.png}}
+  \caption{Tablas de resultados de Greedy y BL}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+   \subfloat[Desviacion y tiempo de Greedy]{
+     \includegraphics[width=0.3\textwidth]{DesvGreedy.png}}
+   \subfloat[Desviacion y tiempo de BL]{
+     \includegraphics[width=0.3\textwidth]{DesvBL.png}}
+  \caption{Desviaciones y tiempos de Greedy y BL}
+\end{figure}
+
+\vspace{10mm}
+Observando los datos de las tablas, podemos observar que el algoritmo greedy tiene un 
+tiempo menor que busqueda local, mientras que tiene una mayor desviacion, lo que quiere decir 
+que sus resultados de dispersiones son peores.
+\vspace{10mm}
+\newline \textbf{¿Por qué Greedy tiene tiempos menores?}
+\newline El algoritmo greedy es más eficiente respecto a lo que tiempo se refiere, 
+ya que :
+\begin{description}
+  \item[Generacion de primera solución]
+  El algoritmo greedy solo tiene que generar dos elementos aleatorios a introducir 
+  en la primera solución, mientras que el algoritmo de busqueda local tiene que 
+  generar aleatoriamente una solución completa.
+  \item[Generacion de vecindario]
+  El algoritmo de Busqueda Local tiene que generar el vecindario completo, lo que requiere un 
+  coste de O(X*Y), siendo X el numero de elementos de la solución, e Y el número de elementos restantes.
+  Ya que el conjunto de solución junto a los restantes son los N elementos, este paso tiene un coste 
+  de O(N), lo que supone una diferencia de tiempo con respecto a Greedy
+  \item[Evaluacion de funcion objetivo]
+  En este caso, los dos algoritmos se conforman de forma muy parecida, ya que se realiza 
+  una factorización en el cálculo del Vector de Distancias en ambos, por lo que no se pueden 
+  extraer conclusiones de aquí.
+  \item[Actualización de la solución constante]
+  El algoritmo Greedy actualiza sí o sí la solución al final de cada iteracion, ya que 
+  aunque ninguno mejore la dispersion, se escoge el que menos la empeore. Si el algorimo de 
+  Busqueda Local no encuentra ningun vecino que mejore la dispersion, termina su ejecución.
+\end{description}
+Aunque estas diferencias no sean muy significativas, a la hora de evaluar muchas ejecuciones 
+de estos algoritmos, encontramos como se acentúa más la diferencia.
+\vspace{5mm}
+
+\textbf{¿Por qué BL tiene menor media de Desviación?}
+\newline El algoritmo de Busqueda Local tiene una menor media de desviacion que el algoritmo 
+Greedy, es decir, que las dispersiones obtenidas de media con el algoritmo de Busqueda Local son 
+menores(y por consiguiente, mejores) que las obtenidas por el algoritmo Greedy.
+La desviacion se calcula como la media de las desviaciones, en porcentaje, del valor obtenido 
+por cada metodo en cada instancia respecto al mejor valor conocido para ese caso.
+\vspace{10mm}
+\begin{equation}
+  \textbf{Desviacion} = 
+  100*\sum_{i=1}^n
+  \frac{ValorAlgoritmo_i - MejorValor_i}{ValorAlgoritmo_i}
+\end{equation}
+
+\vspace{10mm}
+Por lo tanto, tenemos unos datos de referencia, que contienen el mejor coste obtenido para 
+cada instancia del problema.
+El algoritmo de Busqueda Local obtiene mejores dispersiones de media que Greedy, y esto es gracias a que 
+este algoritmo tiene mas probabilidad de encontrar mejores soluciónes.
+\newline Al generar el vecindario completo se asegura que si no se encuentran mejores 
+dispersiones, no las selecciona, al contrario que Greedy, que aunque ninguno mejore la dispersion 
+añade a la solución el que menos la empeore.
+\newline Esto evita que el algoritmo de Busqueda Local vaya hacia soluciónes peores(mínimos locales), y siempre 
+se asegure que cuando actualiza la solución es para una mejor dispersion. 
+\newpage En cambio, Greedy acepta soluciónes peores a la actual, y esto puede hacer que caiga en mínimos locales,
+y al siempre añadir elementos a la solución, no poder salir de ellos.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{MinLocal.png}
+  \caption{Gráfica que muestra el comportamiento de una búsqueda de una solución}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/AGG-Posicion.png}
+  \caption{Desviaciones y tiempos de Algoritmo Genetico Generacional con Cruce \\
+  Basado en Posicion}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/AGG-Uniforme.png}
+  \caption{Desviaciones y tiempos de Algoritmo Genetico Generacional con Cruce \\
+  Uniforme}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/AGE-Posicion.png}
+  \caption{Desviaciones y tiempos de Algoritmo Genetico Estacionario con Cruce \\
+  Basado en Posicion}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/AGE-Uniforme.png}
+  \caption{Desviaciones y tiempos de Algoritmo Genetico Estacionario con Cruce \\
+  Uniforme}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/Memetico1.png}
+  \caption{Desviaciones y tiempos de Algoritmo Memetico \emph{AM-(10,1.0)}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/Memetico2.png}
+  \caption{Desviaciones y tiempos de Algoritmo Memetico \emph{AM-(10,0.1)}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\textwidth]{capturastablas/Memetico3.png}
+  \caption{Desviaciones y tiempos de Algoritmo Memetico \emph{AM-(10,0.1mej)}}
+\end{figure}
+
+\subsection{Tabla resumen}
+\begin{table}[h]
+  \begin{center}
+    \begin{spacing}{1.5}
+    \begin{tabular}{| l | l | l | }
+      \hline
+      \textbf{Algoritmo} & \textbf{Desviación media} & \textbf{Tiempo (en segundos)} \\ \hline
+      \emph{Greedy} & 76,5595103744  & 0,008761569604 \\ \hline
+
+      \emph{BL} & 55,10878940233 & 0,017145496976 \\ \hline
+
+      \emph{AGG-Uniforme} & 40,0088991109 & 7,463298200000 \\ \hline
+
+      \emph{AGG-Posición} & 45,4862646141 & 3,312911800000 \\ \hline
+
+      \emph{AGE-Uniforme} & 55,9744088626 & 9,524131200000 \\ \hline
+
+      \emph{AGE-Posición} & 54,5438597140 & 5,062808200000 \\ \hline
+
+      \emph{AM-(10,1.0)} & -0,0978477902 & 35,944350200000 \\ \hline
+
+      \emph{AM-(10,0.1)} & 14,6659436747 & 6,939745800000 \\ \hline
+
+      \emph{AM-(10,0.1mej)} & 32,5667149186 & 5,862021000000 \\ \hline
+
+    \end{tabular}
+    \end{spacing}
+    \caption{Tabla de medias de desviaciones y tiempos de los algoritmos}
+  \end{center}
+\end{table}
+
+Observando la tabla, podemos ver que el algoritmo que mejores tiempo consigue 
+es el memetico donde cada 10 iteraciones se realiza una busqueda local completa por cada 
+cromosoma de la poblacion actual, es por eso que tiene los tiempos mas altos.
+Esto tiene sentido ya que cada 10 iteraciones todas los cromosomas de la poblacion 
+mejoran con dicho algoritmo, por lo que no va a quedarse estancado en optimos locales, escapando 
+muy rapido de ellos.
+\vspace{3mm}
+\newline Vemos una mejora evidente en el algoritmo genetico de esquema generacional frente al 
+del esquema estacionario, esto se debe a que el esquema estacionario no mejora con tanta rapidez
+como lo hace el generacional, ya que como mucho en cada iteracion podrá mejorar 2 soluciónes, mientras que el 
+generacional puede mejorar hasta n-1 soluciónes, siendo n el numero de cromosomas de la poblacion, ya que es 
+un algoritmo elitista, que nunca pierde la mejor solución de la poblacion actual antes de ser 
+reemplazada por la siguiente.
+\vspace{3mm}
+\newline Las diferencias entre el AGE-Uniforme y el AGE-Posición no son significativas por el fitness 
+obtenido, pero si por el tiempo de ejecucion, ya que el operador de cruce basado en posicion 
+requiere mucho menos tiempo que el uniforme. Esto se debe a que el uniforme en muchas ocasiones,
+llama al operador de reparación, que tiene un coste bastante alto, y además solo se obtiene 
+un hijo con los dos padres, mientras que en el basado en posicion, se obtienen 
+dos hijos de dos padres lo que acelera bastante el proceso.
+Estas diferencias son aplicables igualmente en el esquema generacional, aunque la probabilidad
+de cruce sea 0.7 en vez de 1
+\vspace{3mm}
+\newline Respecto a los algoritmos memeticos, el algoritmo ganador respecto a fitness como he 
+comentado anteriormente es el de la primera variante, ya que al aplicar una busqueda local sobre todos 
+los cromosomas, nunca se queda estancado en la mejora de soluciónes.
+El de la segunda variante, que aplica la busqueda local sobre un 10\% aleatorio de los cromosomas 
+de la poblaicon, es el segundo mejor que hemos conseguido respecto a fitness, pero es un poco peor respecto 
+a tiempo que la ultima variante. Este buen fitness conseguido se debe a la aleatoriedad de los cromosomas
+seleccionados para la busqueda local, ya que los cromosomas que se seleccionan aleatoriamente 
+pueden estar en máximos locales, por lo que gracias a la busqueda local, se pueden mejorar dichas 
+soluciónes.
+\vspace{3mm}
+\newline El ultimo como vemos obtiene el peor resultado respecto a fitness de los 3 algoritmos memeticos, y esto se debe a que al 
+aplicarse la busqueda local sobre el 10\% de mejores soluciónes, muchas veces la búsqueda local 
+se queda estancada en dichas soluciónes porque en el entorno no se encuentra mejora, entonces al aplicarse esa 
+busqueda sobre las mejores no se mejora tanto como la anterior variante, que aleatoriamente es probable 
+que cada x iteraciones seleccione cromosomas que se encuentran estancados, mientras que esta 
+variante no, siempre va a coger a los mejores y por el elitismo del esquema generacional, es probable que 
+se aplica muchas veces a los mismos cromosomas.
+
+
+\end{document}

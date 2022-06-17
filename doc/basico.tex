@@ -1,0 +1,123 @@
+\documentclass[a4paper,10pt]{article}
+
+%%%%%%%%%%%% PREÁMBULO %%%%%%%%%%%%%%%%%%%%%
+
+% Paquetes
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{listings}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+% Comandos
+
+\renewcommand{\lstlistingname}{Código}
+\renewcommand{\lstlistlistingname}{Índice de fragmentos de código fuente}
+
+% Opciones
+
+\title{Python 2.*}
+\author{Ondiz Zarraga}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Este documento es una pequeña guía de Python 
+\end{abstract}
+
+\tableofcontents
+
+\section{Sobre el lenguaje}
+
+\begin{itemize}
+    \item Interpretado
+    \item Indentación obligatoria
+    \item Distingue mayúsculas - minúsculas
+    \item No hay declaración de variables (\textit{dynamic typing})
+    \item Orientado a objetos  
+    \item Garbage colector: quita los objetos a los que no haga referencia nada
+\end{itemize}
+
+\newpage 
+
+
+\begin{algorithm}[H]
+    \scriptsize
+    \label{Algoritmo Busqueda Local}
+    \caption{Algoritmo de búsqueda local}
+    %\KwIn{n, m, solucion}% Parámetros de entrada
+    $v \leftarrow 0 $,$ w\leftarrow 0 $\\
+    $ S\leftarrow D $\\
+    $T \leftarrow \emptyset $\\
+  $Solucion \leftarrow \emptyset$\\
+  $Elementos restantes \leftarrow V$\\
+  $Dispersion Comparacion \leftarrow \emptyset$\\
+  $Distancias \leftarrow \emptyset$\\
+  $Dispersion \leftarrow \emptyset$\\
+  \vspace{3mm}
+  $Copia Solucion \leftarrow \emptyset$\\
+  $Copia Distancia \leftarrow \emptyset$\\
+  $Vecindario \leftarrow \emptyset$\\
+  \vspace{3mm}
+  \While{$Solucion < M$}{
+    \vspace{1mm}
+    $\emph{Vamos generando elementos aleatorios y los introducimos a la solucion}$\\
+    $Elemento a introducir \leftarrow{\emph{GenerarElementoAleatorio(Elementos restantes)}}$\\
+    $Elementos restantes \leftarrow{Elementos restantes-{Elemento a introducir}}$\\
+    $Solucion \leftarrow{Solucion \cup {Elemento a introducir}}$\\
+  }
+  $\emph{Ya tenemos una solucion completa y válida de tamaño M}$\\
+  $\emph{El conjunto de elementos restantes solo contiene}$\\
+  $\emph{los elementos que no están en la solucion}$\\
+  \vspace{3mm}
+  $Vector Distancias \leftarrow{\emph{GenerarVectorDistancias()}}$\\
+  $Dispersion Comparacion \leftarrow{\emph{Calculardispersion(VectorDistancias)}}$\\
+  \vspace{3mm}
+  $Mejora \leftarrow {\textbf{TRUE}}$\\
+
+  \While{Mejora == TRUE {\&\&} iteraciones \textbf{$\leq$} 100000}{
+  $\emph{Generamos un vecindario completo de la solucion actual}$\\
+  $\emph{ y lo mezclamos aleatoriamente}$\\
+  $Vecindario \leftarrow {\emph{GenerarVecindario(solucion)}}$\\
+  $Vecindario \leftarrow {\emph{Desordenar(Vecindario)}}$\\
+  \vspace{3mm}
+  $\emph{Actualizamos las variables antes de recorrer el vecindario}$\\
+  $Copia solucion \leftarrow{solucion}$\\
+  $Mejora \leftarrow {\textbf{FALSE}}$\\
+  $dispersion comparacion \leftarrow{Dispersion}$\\
+  \vspace{3mm}
+  \For{$i \in Size(Vecindario) {\&\&} mejora == FALSE $}{
+    $\emph{Recorremos el vecindario}$\\
+    $Copia solucion \leftarrow{\emph{SustituirPunto(vecindario[i])}}$\\
+    $Copia Distancias \leftarrow{\emph{GenerarVectorDistancias(Copiasolucion)}}$\\
+    $dispersion comparacion \leftarrow{\emph{Calculardispersion(CopiaDistancias)}}$\\
+  }
+
+  \eIf{dispersion comparacion < dispersion}{
+  $\emph{Si la dispersion es mejor, actualizamos la solucion}$\\
+  $dispersion \leftarrow{\emph{dispersion comparacion}}$\\
+  $solucion \leftarrow{\emph{Copiasolucion}}$\\
+  $Mejora \leftarrow{\textbf{TRUE}}$\\
+  $VectorDistancias \leftarrow{\emph{CopiaDistancias}}$\\
+  $Restantes \leftarrow{\emph{CalcularRestantes(solucion)}}$\\
+  }{
+  $\emph{Si la dispersion no es mejor, no actualizamos la solucion,}$\\
+  $\emph{y volvemos al estado anterior}$\\
+  $Copia solucion \leftarrow{solucion}$\\
+  $Copi Distancias \leftarrow{Vector Distancias}$\\
+  }
+
+  $Iteraciones \leftarrow{\emph{Iteraciones}+1}$\\
+}
+
+$\emph{Devolvemos la solucion}$\\
+$\textbf {Return solucion}$\\
+
+\end{algorithm}
+
+\end{document}

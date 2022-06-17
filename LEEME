@@ -1,0 +1,3 @@
+Compilar con la orden make
+Ejecutar el main con redireccion de entrada de la forma bin/main < data/{fichero}.txt
+El tiempo se muestra en segundos
