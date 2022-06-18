@@ -82,7 +82,7 @@ int main()
     vector<resultado> resultados;
 
     // PRUEBA DE CORRECTO FUNCIONAMIENTO DEL ALGORITMO
-    CalcularPoblacionAleatoria(n, m, poblacion, semilla, matriz_datos, 50);
+    CalcularPoblacionAleatoria(n, m, poblacion, semilla, matriz_datos, 5);
 
     posicion_mejor_solucion = 0;
     mejor_sol = GetMejor(poblacion, posicion_mejor_solucion);
@@ -140,6 +140,7 @@ int main()
 
 
     cout << count (mejor_sol.solucion.begin(), mejor_sol.solucion.end(), true);
+    cout << endl;
 
     return 0;
 }

@@ -150,8 +150,8 @@ void CalculaDispersion(vector<double> distancias, double &dispersion)
             minimo = *it;
     }
 
-    cout << "Maximo: " << maximo << endl;
-    cout << "Minimo: " << minimo << endl;
+    //cout << "Maximo: " << maximo << endl;
+    //cout << "Minimo: " << minimo << endl;
     
     
     // Calculamos la dispersion que es la diferencia entre la distancia maxima y la minima
@@ -332,7 +332,7 @@ void MutacionPoblacion(vector<Solucion> & poblacion, const double probabilidad, 
     }
 }
 
-void Migracion(vector<Solucion> & poblacion)
+/*void Migracion(vector<Solucion> & poblacion)
 {
     const int tam_poblacion = poblacion.size();
     const int tam_SIV = poblacion[0].solucion.size();
@@ -358,24 +358,22 @@ void Migracion(vector<Solucion> & poblacion)
         }  // Fin de for j in tamaño solucion
     } // for Solucion
 
-}
+}*/
 
-int IndiceRouletteWheel(Solucion & s, const vector<Solucion> &p)
+int IndiceRouletteWheel(const vector<double> & probabilidades_emigraciones)
 {
-    const double mu = s.prob_emigracion;
     double fsum = 0;
-    for( Solucion s : p )
-        fsum += s.prob_emigracion;
-    
-    double F = p[0].prob_emigracion;
-
-    int indice = 0;
-    double r = Random::get(0,int(fsum));
-
-    while(  (r>F) && (indice<p.size()) ){
-        indice++;
-        F += p[indice].prob_emigracion;//mu de indice mu(indice) 
+    for(double p : probabilidades_emigraciones){
+        fsum += p;
     }
 
-    return indice;
+    double cumsum = 0;
+    double r = Random::get<double>(0,int(fsum));
+
+    for(int i=0; i<probabilidades_emigraciones.size(); i++){
+        cumsum += probabilidades_emigraciones[i];
+        if(cumsum>=r){
+            return i;
+        }
+    }
 }

@@ -70,6 +70,6 @@ void MutacionPoblacion(vector<Solucion> & poblacion, const double probabilidad, 
 
 void Migracion(vector<Solucion> & poblacion);
 
-int IndiceRouletteWheel(Solucion & s, const vector<Solucion> &p);
+int IndiceRouletteWheel(const vector<double> &);
 
 #endif

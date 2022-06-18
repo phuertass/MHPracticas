@@ -1,6 +1,4 @@
-#include "BL.h"
 #include "funciones.h"
-#include "omp.h"
 #include "BBO.h"
 #include "ES.h"
 
@@ -246,136 +244,126 @@ inline void Mutar(Solucion &s, int j, int m, int DIMENSION_PROBLEMA, double **&m
 void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion, vector<Solucion> &poblacion, double **&matriz_datos)
 {
     Random::seed(semilla);
-    // Cantidad de mejores elementos que se quieren conservar entre generaciones
-    const int NUMERO_ELITES = 5;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // PARAMETROS DEL BBO
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
     // Numero de SIV por solucion
     const int DIMENSION_PROBLEMA = n;
+
     // Numero maximo de generaciones creadas
     const int TOPE_GENERACIONES = 1;
+
     // Tamaño de la poblacion
     const int TAMANIO_POBLACION = poblacion.size();
 
-    const int SMAX = 20;
+    // Cantidad de mejores elementos que se quieren conservar entre generaciones
+    const int NUMERO_ELITES = 0.2*TAMANIO_POBLACION;
 
-    const double PROB_MUTACION = probabilidad_mutacion;
+    // Numero de nuevos habitats a generar
+    const int NUMERO_NUEVOS_HABITANTES = TAMANIO_POBLACION - NUMERO_ELITES;
 
-    // Cada individuo de la poblacion se considera como un habitat (SIV)
 
-    // Cuando una isla tiene SMAX especies, lamba = 0
 
-    // La tasa maxima de emigracion ocurre cuando la isla tiene SMAX especies
-    // La tasa maximo de inmigracion ocurre cuando la isla tiene 0 especies
-
-    // Elites que se van a conservar entre generaciones
-    vector<Solucion> elites;
-
-    CalcularMu(poblacion);
-    CalcularLambda(poblacion);
-
-    int indice = 1;
-    int num_iteraciones = 0;
-    while (num_iteraciones < TOPE_GENERACIONES) // While stop criterion is not satisfied
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // VARIABLES DE MIGRACION
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    const double PROB_MUTACION = 0.05;
+    const double alpha = 0.9;
+    vector<double> mu(TAMANIO_POBLACION);
+    vector<double> lambda(TAMANIO_POBLACION);
+    for (int i = 0; i < TAMANIO_POBLACION; i++)
     {
-        if (num_iteraciones % 10 == 0)
-        {
-            int contador = 0;
-            for (Solucion s : poblacion)
-            {
-                AlgoritmoEnfriamientoSimulado(n, m, s, matriz_datos, 10000);
-                poblacion[contador] = s;
-                contador++;
-            }
-        }
-        // Lo primero que hacemos es ordenar en cada iteraciones la poblacion por fitness
-        // Las soluciones con mejor fitnees (en este caso menor dispersion) se encuentran al principio
-        OrdenarPorFitness(poblacion);
+        double calculo = double((TAMANIO_POBLACION + 1) - i) / (TAMANIO_POBLACION + 1);
 
-        // Para conversar el elitismo se van a guardar las mejores NUMERO_ELITES soluciones
-        GetElites(poblacion, elites, NUMERO_ELITES);
+        mu[i] = calculo;
+        lambda[i] = 1 - calculo;
+    }
 
-        vector<Solucion> poblacion_temporal = poblacion;
-        // Calculamos lambda(i) y mu(i) para cada una de las soluciones de la poblacion
-        CalcularMu(poblacion_temporal);
-        CalcularLambda(poblacion_temporal);
 
-        //////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////
-        // MIGRACION
-        // Recorremos todas las soluciones de la poblacion actual
-        // cout << "Poblacion actual: " << poblacion_temporal << endl;
-        // cout << "Migracion" << endl;
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // INICIALIZACION DEL ALGORITMO
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Lo primero que hacemos es ordenar en cada iteraciones la poblacion por fitness
+    // Las soluciones con mejor fitnees (en este caso menor dispersion) se encuentran al principio
+    OrdenarPorFitness(poblacion);
+
+    // Para conversar el elitismo se van a guardar las mejores NUMERO_ELITES soluciones
+    vector<Solucion> elites;
+    GetElites(poblacion, elites, NUMERO_ELITES);
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    // BUCLE PRINCIPAL DEL ALGORITMO BBO
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    for (int num_iteraciones = 0; num_iteraciones < TOPE_GENERACIONES; num_iteraciones++) // While stop criterion is not satisfied
+    {
+
+        // CREAMOS COPIA DE LA POBLACION
+        vector<Solucion> nuevas_soluciones = poblacion;
+
         for (int i = 0; i < TAMANIO_POBLACION; i++)
         {
-            Solucion s = poblacion[i];
-            const double fitness = s.dispersion;
-            const double mu = s.prob_emigracion;
-            const double lambda = s.prob_inmigracion;
-            // cout << "Fitness: " << fitness << " Mu: " << mu << " Lambda: " << lambda << endl;
-            //  Recorremos cada elemento de la solucion
-            for (int j = 0; j < DIMENSION_PROBLEMA; j++)
+            for (int j = 0; j < DIMENSION_PROBLEMA; j++)             //  Recorremos cada elemento de la solucion
             {
-                // Debemos migrar?
-                if (Random::get<double>(0, 1) < lambda)
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // MIGRACION
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                if (Random::get<double>(0, 1) < lambda[i])
                 {
                     // Realizamos la migracion
-
                     // Seleccionamos una isla emigrante con probabilidad mu
-                    const double numero_random = Random::get<double>(0, SumatoriaMu(poblacion));
-                    double seleccionado = poblacion[0].prob_emigracion;
-                    int indice_seleccionado = 0;
+                    vector<double> probabilidades_emigracion(mu);
+                    probabilidades_emigracion[i] = 0;
 
-                    while ((numero_random > seleccionado) && (indice_seleccionado < TAMANIO_POBLACION))
-                    {
-                        indice_seleccionado++;
-                        seleccionado += poblacion[indice_seleccionado].prob_emigracion;
-                    }
-                    if (numero_elementos_seleccionados(poblacion_temporal[i]) != m)
-                    {
-                    }
+                    int emigrante = IndiceRouletteWheel(probabilidades_emigracion);
+
+                    cout << "Elemento emigrante es: " << emigrante << endl;
+                    // EL INDICE EMIGRANTE INDICA EL ELEMENTO DEL HABITAT I QUE SE VA A MIGRAR
+
                 }
-                else
-                {
-                }
-            }
-        }
 
-        CalculoFuncionObjetivo(poblacion_temporal, matriz_datos);
-
-
-        ///////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////
-        // MUTACION
-        for (int i = 0; i < TAMANIO_POBLACION; i++)
-        {
-            Solucion s = poblacion_temporal[i];
-            for (int j = 0; j < DIMENSION_PROBLEMA; j++)
-            {
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // MUTACION
+                /////////////////////////////////////////////////////////////////////////////////////////////
                 if (Random::get<double>(0, 1) < PROB_MUTACION)
                 {
-                    // cout << "hola"<< endl;
-                    Mutar(s, j, m, DIMENSION_PROBLEMA, matriz_datos);
+                    // Realizamos la mutacion
+                    nuevas_soluciones[i].solucion[j] = !nuevas_soluciones[i].solucion[j];
                 }
+
+                CalculoFuncionObjetivo(nuevas_soluciones, matriz_datos);
+        
             }
+
+
+            OrdenarPorFitness(nuevas_soluciones);
+            for (int i = 0; i < NUMERO_ELITES; i++)
+                nuevas_soluciones[TAMANIO_POBLACION - i - 1] = elites[i];
+            CalculoFuncionObjetivo(nuevas_soluciones, matriz_datos);
+
+            poblacion = nuevas_soluciones;
         }
-
-        CalculoFuncionObjetivo(poblacion_temporal, matriz_datos);
-
-        OrdenarPorFitness(poblacion_temporal);
-
-        // cout << "#############################################################################################" << endl;
-        // cout << "Poblacion actual: " << poblacion_temporal << endl;
-        for (int i = 0; i < elites.size(); i++)
-        {
-            // cout << "Elite " << i << ": " << elites[i] << endl;
-            // cout << "Peor elite " << i << ": " << poblacion_temporal[TAMANIO_POBLACION-1-i] << endl;
-            poblacion_temporal[TAMANIO_POBLACION - i - 1] = elites[i];
-        }
-        poblacion = poblacion_temporal;
-        num_iteraciones++;
-        indice++;
-
-        CalculoFuncionObjetivo(poblacion_temporal, matriz_datos);
     }
 
     OrdenarPorFitness(poblacion);
+
+    //for (int i = 0; i < poblacion.size(); i++)
+    //{
+    //    Solucion s = poblacion[i];
+    //    AlgoritmoEnfriamientoSimulado(n, m, s, matriz_datos, 10000);
+    //    poblacion[i] = s;
+    //}
+    CalculoFuncionObjetivo(poblacion, matriz_datos);
 }
