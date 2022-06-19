@@ -14,7 +14,7 @@ tiemposmemeticos1 = list()
 tiemposmemeticos2 = list()
 tiemposmemeticos3 = list()
 
-fichero = '/home/phuertas/UNIVERSIDAD/MH/PRACTICAS/P3/scripts/BMB.txt'
+fichero = '/home/phuertas/UNIVERSIDAD/MH/PRACTICAS/P4/scripts/BMB.txt'
 
 with open(fichero) as f:
     for linea in f:

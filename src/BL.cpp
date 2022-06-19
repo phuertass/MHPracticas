@@ -56,7 +56,7 @@ vector<int>& restantes, double ** &matriz_datos, vector<double> & distancias, in
     vecindario.clear();
     CalcularRestantes(restantes, seleccionados, n);
 
-    while(mejora and num_it<10000)
+    while(mejora and num_it<100000)
     {
         //CALCULAMOS TODO EL VECINDARIO, LO DESORDENAMOS Y VAMOS VIENDO SI 
         //MEJORA CON ALGUNO

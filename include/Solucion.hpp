@@ -34,10 +34,18 @@ public:
         //os << "{Distancias}-->";
         //for (int i = 0; i < s.distancias.size(); i++)
         //    os << s.distancias[i] << " ";
+        os << "{Solucion}-->";
+        for (int i = 0; i < s.solucion.size(); i++)
+            os << s.solucion[i] << " ";
 
+        os << "\n{Numero seleccionados}-->" << count(s.solucion.begin(), s.solucion.end(), true) << endl;
+
+        os << "{Distancias}-->";
+        for (int i = 0; i < s.distancias.size(); i++)
+            os << s.distancias[i] << " ";
         os << endl;
-        os << "Probabilidad de inmigracion: " << s.prob_inmigracion << endl;
-        os << "Probabilidad de emigracion: " << s.prob_emigracion << endl;
+        //os << "Probabilidad de inmigracion: " << s.prob_inmigracion << endl;
+        //os << "Probabilidad de emigracion: " << s.prob_emigracion << endl;
         return os;
     }
 

@@ -1,6 +1,8 @@
 #include "funciones.h"
 #include "BBO.h"
 #include "ES.h"
+#include "BL.h"
+#include "omp.h"
 
 using namespace std;
 
@@ -172,78 +174,59 @@ inline double SumatoriaMu(const vector<Solucion> &p)
     return suma;
 }
 
-inline void CalculoFuncionObjetivo(vector<Solucion> &p, double **&matriz_datos)
+void CalculoFuncionObjetivoCromosoma(Solucion &s, int n, double **&matriz_datos)
 {
-    // vector<int> seleccionados;
-    for (int i = 0; i < p.size(); i++)
+
+    s.solucion.clear();
+    s.solucion.resize(n, false);
+
+    for (int i = 0; i < s.seleccionados.size(); i++)
     {
-        Solucion s = p[i];
-
-        s.seleccionados.clear();
-        for (int i = 0; i < s.solucion.size(); i++)
-        {
-            if (s.solucion[i])
-            {
-                s.seleccionados.push_back(i);
-            }
-        }
-        GeneraVDistancias(s.distancias, s.seleccionados, matriz_datos);
-        CalculaDispersion(s.distancias, s.dispersion);
-
-        assert(count(s.solucion.begin(), s.solucion.end(), true) == s.seleccionados.size());
-        p[i] = s;
+        s.solucion[s.seleccionados[i]] = true;
     }
+
+    // cout << "Solucion " << s << endl;
+    //  sort(s.seleccionados.begin(), s.seleccionados.end());
+    GeneraVDistancias(s.distancias, s.seleccionados, matriz_datos);
+    // cout << "KE "<< endl;
+    double dispersion;
+
+    // Obtener maximo y minimo elemento de distancias
+    double max_dist = 0;
+    double min_dist = 9999999999999;
+
+    for (int i = 0; i < s.distancias.size(); i++)
+    {
+        if (s.distancias[i] > max_dist)
+        {
+            max_dist = s.distancias[i];
+        }
+        if (s.distancias[i] < min_dist)
+        {
+            min_dist = s.distancias[i];
+        }
+    }
+
+    dispersion = max_dist - min_dist;
+
+    s.dispersion = dispersion;
+
+    // cout << s << endl;
 }
 
-inline void Mutar(Solucion &s, int j, int m, int DIMENSION_PROBLEMA, double **&matriz_datos)
+void CalculoFuncionObjetivo(vector<Solucion> &p, int n, double **&matriz_datos)
 {
-    // int n = s.solucion.size();
-    // int m = s.seleccionados.size();
-
-    bool elemento = s.solucion[j];
-    int posicion = Random::get(0, DIMENSION_PROBLEMA);
-    while (s.solucion[posicion] == elemento)
+    for (int i = 0; i < p.size(); i++)
     {
-        posicion = Random::get(0, DIMENSION_PROBLEMA);
+        CalculoFuncionObjetivoCromosoma(p[i], n, matriz_datos);
     }
-    int num_select = numero_elementos_seleccionados(s);
-    if (num_select > m)
-    {
-        int random = Random::get<int>(0, DIMENSION_PROBLEMA);
-        while (s.solucion[random])
-        {
-            random = Random::get<int>(0, DIMENSION_PROBLEMA);
-        }
-        s.solucion[random] = false;
-    }
-    else if (num_select < m)
-    {
-        int random = Random::get<int>(0, DIMENSION_PROBLEMA);
-        while (!s.solucion[random])
-        {
-            random = Random::get<int>(0, DIMENSION_PROBLEMA);
-        }
-        s.solucion[random] = true;
-    }
-
-    bool aux = s.solucion[j];
-    s.solucion[j] = s.solucion[posicion];
-    s.solucion[posicion] = aux;
-    s.seleccionados.clear();
-    for (int i = 0; i < s.solucion.size(); i++)
-    {
-        if (s.solucion[i])
-        {
-            s.seleccionados.push_back(i);
-        }
-    }
-    GeneraVDistancias(s.distancias, s.seleccionados, matriz_datos);
-    CalculaDispersion(s.distancias, s.dispersion);
 }
 
 void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion, vector<Solucion> &poblacion, double **&matriz_datos)
 {
     Random::seed(semilla);
+
+    int pos;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,31 +235,31 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     // Numero de SIV por solucion
-    const int DIMENSION_PROBLEMA = n;
+    const int DIMENSION_PROBLEMA = m;
 
     // Numero maximo de generaciones creadas
-    const int TOPE_GENERACIONES = 1;
+    const int TOPE_GENERACIONES = 100;
 
     // Tamaño de la poblacion
     const int TAMANIO_POBLACION = poblacion.size();
+    // const int TAMANIO_POBLACION = 10;
 
     // Cantidad de mejores elementos que se quieren conservar entre generaciones
-    const int NUMERO_ELITES = 0.2*TAMANIO_POBLACION;
+    const int NUMERO_ELITES = 0.05 * TAMANIO_POBLACION;
 
     // Numero de nuevos habitats a generar
     const int NUMERO_NUEVOS_HABITANTES = TAMANIO_POBLACION - NUMERO_ELITES;
-
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
     // VARIABLES DE MIGRACION
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
-    const double PROB_MUTACION = 0.05;
+    const double PROB_MUTACION = 0.01;
     const double alpha = 0.9;
     vector<double> mu(TAMANIO_POBLACION);
     vector<double> lambda(TAMANIO_POBLACION);
+
     for (int i = 0; i < TAMANIO_POBLACION; i++)
     {
         double calculo = double((TAMANIO_POBLACION + 1) - i) / (TAMANIO_POBLACION + 1);
@@ -285,12 +268,21 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
         lambda[i] = 1 - calculo;
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
     // INICIALIZACION DEL ALGORITMO
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
+
+    vector<pair<int, int>> vecindario;
+    vector<int> restantes;
+
+    // Generacion de la primera solucion aleatoria
+    for (int i = 0; i < TAMANIO_POBLACION; i++)
+    {
+        BL(poblacion[i].seleccionados, vecindario, poblacion[i].dispersion, restantes, matriz_datos,
+           poblacion[i].distancias, n);
+    }
 
     // Lo primero que hacemos es ordenar en cada iteraciones la poblacion por fitness
     // Las soluciones con mejor fitnees (en este caso menor dispersion) se encuentran al principio
@@ -300,6 +292,8 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     vector<Solucion> elites;
     GetElites(poblacion, elites, NUMERO_ELITES);
 
+    Solucion mejor_encontrada = GetMejor(poblacion, pos);
+    
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -307,63 +301,136 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
 
+    // cout << "POBLACION AL INICIO " << poblacion << endl;
+
+
     for (int num_iteraciones = 0; num_iteraciones < TOPE_GENERACIONES; num_iteraciones++) // While stop criterion is not satisfied
     {
+        GetElites(poblacion, elites, NUMERO_ELITES);
 
-        // CREAMOS COPIA DE LA POBLACION
-        vector<Solucion> nuevas_soluciones = poblacion;
-
+ 
         for (int i = 0; i < TAMANIO_POBLACION; i++)
         {
-            for (int j = 0; j < DIMENSION_PROBLEMA; j++)             //  Recorremos cada elemento de la solucion
+            
+            //#pragma omp parallel for private(i)
+            for (int j = 0; j < DIMENSION_PROBLEMA; j++)
             {
+
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // MIGRACION
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 if (Random::get<double>(0, 1) < lambda[i])
                 {
-                    // Realizamos la migracion
-                    // Seleccionamos una isla emigrante con probabilidad mu
+                    // cout << "SOLUCION PREMIGRACION " << poblacion[i] << endl;
+                    //  Realizamos la migracion
+                    //  Seleccionamos una isla emigrante con probabilidad mu
                     vector<double> probabilidades_emigracion(mu);
                     probabilidades_emigracion[i] = 0;
 
-                    int emigrante = IndiceRouletteWheel(probabilidades_emigracion);
+                    int k = IndiceRouletteWheel(probabilidades_emigracion);
 
-                    cout << "Elemento emigrante es: " << emigrante << endl;
-                    // EL INDICE EMIGRANTE INDICA EL ELEMENTO DEL HABITAT I QUE SE VA A MIGRAR
+                    // Busco un elemento de la isla k que no este en la isla i
 
+                    int posicion = Random::get<int>(0, m - 1);
+                    int out = poblacion[i].seleccionados[j];
+                    bool busca = true;
+                    int busquedas=0;
+                    while (busca && busquedas<100)
+                    {
+                        //cout << "POSICION " << posicion << endl;
+                        //cout << "POBLACION I" << poblacion[i] << endl;
+                        int elemento = poblacion[k].seleccionados[posicion];
+                        //cout << "ELEMENTO " << elemento << endl;
+                        if (elemento > n)
+                        {
+                            cout << "Error" << endl;
+                            cout << "Posicion " << posicion << endl;
+                            cout << "Out " << out << endl;
+                            cout << "Elemento " << elemento << endl;
+                            MuestraVector("Vector", poblacion[k].seleccionados);
+                            exit(1);
+                        }
+                        if (!poblacion[i].solucion[elemento])
+                        {
+                            busca = false;
+                            // cout << "Elemento nuevo: " << elemento << endl;
+                            // cout << "Elemento borrado: " << out << endl
+                            //      << endl;
+
+                            for (int x = 0; x < poblacion[i].seleccionados.size(); x++)
+                            {
+                                if (poblacion[i].seleccionados[x] == out)
+                                {
+                                    poblacion[i].seleccionados[x] = elemento;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            posicion = Random::get<int>(0, m - 1);
+                        }
+                        busquedas++;
+                    }
+
+                    CalculoFuncionObjetivoCromosoma(poblacion[i], n, matriz_datos);
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                // MUTACION
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                if (Random::get<double>(0, 1) < PROB_MUTACION)
-                {
-                    // Realizamos la mutacion
-                    nuevas_soluciones[i].solucion[j] = !nuevas_soluciones[i].solucion[j];
-                }
-
-                CalculoFuncionObjetivo(nuevas_soluciones, matriz_datos);
-        
             }
 
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            // MUTACION
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            if (Random::get<double>(0, 1) < PROB_MUTACION)
+            {
 
-            OrdenarPorFitness(nuevas_soluciones);
-            for (int i = 0; i < NUMERO_ELITES; i++)
-                nuevas_soluciones[TAMANIO_POBLACION - i - 1] = elites[i];
-            CalculoFuncionObjetivo(nuevas_soluciones, matriz_datos);
+                int elemento = Random::get<int>(0, n - 1);
+                while (find(poblacion[i].seleccionados.begin(), poblacion[i].seleccionados.end(), elemento) !=
+                       poblacion[i].seleccionados.end())
+                {
+                    elemento = Random::get<int>(0, n - 1);
+                }
 
-            poblacion = nuevas_soluciones;
+                int out = poblacion[i].seleccionados[Random::get<int>(0, DIMENSION_PROBLEMA)];
+
+                for (int x = 0; x < poblacion[i].seleccionados.size(); x++)
+                {
+                    if (poblacion[i].seleccionados[x] == out)
+                    {
+                        poblacion[i].seleccionados[x] = elemento;
+                    }
+                }
+
+                CalculoFuncionObjetivoCromosoma(poblacion[i], n, matriz_datos);
+
+                // cout << "SOLUCION TRAS MUTACION" << poblacion[i] << endl;
+            }
         }
+
+        for (int i = 0; i < NUMERO_ELITES; i++)
+            poblacion[TAMANIO_POBLACION - i - 1] = elites[i];
+
+        OrdenarPorFitness(poblacion);
+
+        if(GetMejor(poblacion, pos ).dispersion < mejor_encontrada.dispersion)
+            mejor_encontrada = GetMejor(poblacion, pos);
+
     }
 
     OrdenarPorFitness(poblacion);
 
-    //for (int i = 0; i < poblacion.size(); i++)
-    //{
-    //    Solucion s = poblacion[i];
-    //    AlgoritmoEnfriamientoSimulado(n, m, s, matriz_datos, 10000);
-    //    poblacion[i] = s;
-    //}
-    CalculoFuncionObjetivo(poblacion, matriz_datos);
+    //#pragma omp parallel for num_threads(8) private(poblacion)
+    for (int i = 0; i < poblacion.size(); i++){
+        Reparacion(n,m,poblacion[i], matriz_datos);
+        BL(poblacion[i].seleccionados, vecindario, poblacion[i].dispersion, restantes,
+           matriz_datos,poblacion[i].distancias, n);
+    }
+
+    CalculoFuncionObjetivo(poblacion, n, matriz_datos);
+
+
+    if(GetMejor(poblacion, pos ).dispersion < mejor_encontrada.dispersion)
+        mejor_encontrada = GetMejor(poblacion, pos);
+    
+    cout << "Mejor solucion encontrada: " << mejor_encontrada << endl;
+    //exit(0);
+    // cout << "POBLACION FINALLLL " << poblacion << endl;
 }

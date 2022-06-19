@@ -82,7 +82,7 @@ int main()
     Random::seed(semilla);
     vector<Solucion> poblacion;
     Solucion mejor_sol;
-    CalcularPoblacionAleatoria(n, m, poblacion, semilla, matriz_datos, 10);
+    CalcularPoblacionAleatoria(n, m, poblacion, semilla, matriz_datos, 100);
 
     //cout << poblacion << endl;
 

@@ -108,10 +108,19 @@ void GeneraVDistancias(vector<double> &distancias, const vector<int> &selecciona
 {
     distancias.clear();
 
-    distancias.resize(seleccionados.size());
+    distancias.resize(seleccionados.size(), 0);
 
-    for (int i : distancias)
-        distancias[i] = 0;
+    //for (int i : distancias)
+    //    distancias[i] = 0;
+
+//    cout << "Generando distancias..." << endl;
+//    cout << "Seleccionados: ";
+//    for (int i = 0; i < seleccionados.size(); i++)
+//    {
+//        cout << seleccionados[i] << " ";
+//    }
+//    cout << endl;
+    
 
     int contador = 0;
     int tamanio_seleccionados = seleccionados.size();
@@ -150,12 +159,13 @@ void CalculaDispersion(vector<double> distancias, double &dispersion)
             minimo = *it;
     }
 
+
     //cout << "Maximo: " << maximo << endl;
     //cout << "Minimo: " << minimo << endl;
     
-    
     // Calculamos la dispersion que es la diferencia entre la distancia maxima y la minima
     dispersion = maximo - minimo;
+    //cout << "Dispersion: " << dispersion << endl;
 };
 void SustituirPunto(vector<double> &copia_dist, const pair<int,int> pareja, double **&matriz,
 vector<int> & seleccionados)
@@ -332,34 +342,6 @@ void MutacionPoblacion(vector<Solucion> & poblacion, const double probabilidad, 
     }
 }
 
-/*void Migracion(vector<Solucion> & poblacion)
-{
-    const int tam_poblacion = poblacion.size();
-    const int tam_SIV = poblacion[0].solucion.size();
-    const int TOPE_EVALUACIONES = 10;
-
-    int evaluaciones = 0;
-    // Vamos a realizar las migraciones sobre una poblacion nueva
-    vector<Solucion> isla_temporal = poblacion;
-
-    for(Solucion s : isla_temporal){
-        s.prob_inmigracion = 0.001;
-        for(int j=0; j<tam_SIV; j++){
-            if(Random::get(0,1)<s.prob_inmigracion){
-                cout << s << endl;
-                int indice_a_migrar = IndiceRouletteWheel(s, poblacion);
-
-                evaluaciones++;
-                if(evaluaciones==TOPE_EVALUACIONES){
-                    break;
-                }
-            } // if not inmigracion
-
-        }  // Fin de for j in tamaño solucion
-    } // for Solucion
-
-}*/
-
 int IndiceRouletteWheel(const vector<double> & probabilidades_emigraciones)
 {
     double fsum = 0;
@@ -372,6 +354,8 @@ int IndiceRouletteWheel(const vector<double> & probabilidades_emigraciones)
 
     for(int i=0; i<probabilidades_emigraciones.size(); i++){
         cumsum += probabilidades_emigraciones[i];
+        //cout << "Cumsum: " << cumsum << endl;
+        //cout << "r: " << r << endl;
         if(cumsum>=r){
             return i;
         }
