@@ -354,10 +354,10 @@ int IndiceRouletteWheel(const vector<double> & probabilidades_emigraciones)
 
     for(int i=0; i<probabilidades_emigraciones.size(); i++){
         cumsum += probabilidades_emigraciones[i];
-        //cout << "Cumsum: " << cumsum << endl;
-        //cout << "r: " << r << endl;
         if(cumsum>=r){
             return i;
         }
     }
+
+    return -1;
 }

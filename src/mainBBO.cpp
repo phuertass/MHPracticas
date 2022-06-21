@@ -82,13 +82,10 @@ int main()
     vector<resultado> resultados;
 
     // PRUEBA DE CORRECTO FUNCIONAMIENTO DEL ALGORITMO
-    CalcularPoblacionAleatoria(n, m, poblacion, semilla, matriz_datos, 50);
+    CalcularPoblacionAleatoria(n, m, poblacion, semilla, matriz_datos, 100);
 
     posicion_mejor_solucion = 0;
     mejor_sol = GetMejor(poblacion, posicion_mejor_solucion);
-    //cout << "La mejor solucion es: " << endl;
-    //MuestraVector("", mejor_sol.solucion);
-    //cout << "Dispersion: " << mejor_sol.dispersion << endl << endl;
 
     chrono::high_resolution_clock::time_point t1;
     chrono::high_resolution_clock::time_point t2;
@@ -99,33 +96,13 @@ int main()
     t2 = chrono::high_resolution_clock::now();
     time_span = chrono::duration_cast<chrono::duration<double>>(t2 - t1);
 
-    //cout << "---------------------------------------------------------------------------------" << endl;
-    //cout << poblacion << endl;
-    //cout << "--------------------------------------------------------------------------------" << endl;
 
 
     posicion_mejor_solucion = 0;
     mejor_sol = GetMejor(poblacion, posicion_mejor_solucion);
-    //cout << "La mejor solucion es: " << endl;
-    //MuestraVector("", mejor_sol.solucion);
-    //cout << "Dispersion: " << mejor_sol.dispersion << endl;
 
-    vector<int> ult_seleccionados;
-    for (int i = 0; i < mejor_sol.solucion.size(); i++)
-    {
-        if (mejor_sol.solucion[i])
-            ult_seleccionados.push_back(i);
-    }
+    cout << "Solucion" << mejor_sol << endl;
 
-    for (int i = 0; i < ult_seleccionados.size(); i++)
-    {
-        //cout << ult_seleccionados[i];
-        //if (i < ult_seleccionados.size() - 1)
-        //    cout << ",";
-    }
-
-    cout << endl
-         << endl;
     r = {"BBO", mejor_sol.dispersion, time_span.count()};
     resultados.push_back(r);
 

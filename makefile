@@ -24,10 +24,10 @@ all : preambulo $(OBJETOS) arbol final
 # P4
 ###############################################################################
 $(BIN)/mainBBO : $(OBJ)/mainBBO.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Generacional.o $(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o \
+$(OBJ)/random.o $(OBJ)/BL.o \
 $(OBJ)/BBO.o $(OBJ)/ES.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o $(OBJ)/BBO.o $(OBJ)/ES.o
+	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o \
+	 $(OBJ)/BL.o  $(OBJ)/BBO.o $(OBJ)/ES.o
 
 ###############################################################################
 
@@ -39,89 +39,6 @@ $(BIN)/% : $(OBJ)/%.o
 	$(CXX) -o $@ $< $(CXXFLAGS) 
 	@echo
 
-$(BIN)/main : $(OBJ)/main.o $(OBJ)/funciones.o $(OBJ)/random.o \
-$(OBJ)/Generacional.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o \
-$(OBJ)/BL.o 
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o $(OBJ)/BL.o
-
-$(BIN)/mainILS : $(OBJ)/mainILS.o $(OBJ)/funciones.o $(OBJ)/random.o \
-$(OBJ)/Generacional.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o \
-$(OBJ)/BL.o $(OBJ)/ILS.o $(OBJ)/ES.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o $(OBJ)/BL.o \
-	$(OBJ)/ILS.o $(OBJ)/ES.o
-
-$(BIN)/mainILS_ES : $(OBJ)/mainILS_ES.o $(OBJ)/funciones.o $(OBJ)/random.o \
-$(OBJ)/Generacional.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o \
-$(OBJ)/BL.o $(OBJ)/ILS.o $(OBJ)/ES.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o $(OBJ)/BL.o \
-	$(OBJ)/ILS.o $(OBJ)/ES.o
-
-$(BIN)/mainBMB : $(OBJ)/mainBMB.o $(OBJ)/funciones.o $(OBJ)/random.o \
-$(OBJ)/Generacional.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o \
-$(OBJ)/BL.o $(OBJ)/BMB.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o $(OBJ)/BL.o \
-	$(OBJ)/BMB.o
-
-$(BIN)/mainES : $(OBJ)/mainES.o $(OBJ)/funciones.o $(OBJ)/random.o \
-$(OBJ)/Generacional.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o \
-$(OBJ)/BL.o $(OBJ)/ES.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o $(OBJ)/BL.o \
-	$(OBJ)/ES.o
-
-$(BIN)/mainP2 : $(OBJ)/mainP2.o $(OBJ)/funciones.o $(OBJ)/random.o \
-$(OBJ)/Generacional.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o \
-$(OBJ)/BL.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Estacionario.o $(OBJ)/Cruces.o $(OBJ)/Memetico.o $(OBJ)/BL.o
-
-
-
-##############################################################################################
-# ALGORITMOS PRACTICA 2
-##############################################################################################
-
-$(BIN)/mainGeneracionalPosicion : $(OBJ)/mainGeneracionalPosicion.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Generacional.o $(OBJ)/Cruces.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Cruces.o
-
-$(BIN)/mainGeneracionalUniforme : $(OBJ)/mainGeneracionalUniforme.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Generacional.o $(OBJ)/Cruces.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Cruces.o
-
-
-$(BIN)/mainEstacionarioPosicion : $(OBJ)/mainEstacionarioPosicion.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Estacionario.o \
-	$(OBJ)/Cruces.o
-
-
-$(BIN)/mainEstacionarioUniforme : $(OBJ)/mainEstacionarioUniforme.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Estacionario.o $(OBJ)/Cruces.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Estacionario.o \
-	$(OBJ)/Cruces.o
-
-$(BIN)/mainMemetico1 : $(OBJ)/mainMemetico1.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Generacional.o $(OBJ)/Cruces.o $(OBJ)/BL.o \
-$(OBJ)/Memetico.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o
-
-$(BIN)/mainMemetico2 : $(OBJ)/mainMemetico2.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Generacional.o $(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o
-
-$(BIN)/mainMemetico3 : $(OBJ)/mainMemetico3.o $(OBJ)/funciones.o \
-$(OBJ)/random.o $(OBJ)/Generacional.o $(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o
-	$(CXX) -o $@ $< $(CXXFLAGS)  $(OBJ)/funciones.o $(OBJ)/Generacional.o \
-	$(OBJ)/Cruces.o $(OBJ)/BL.o $(OBJ)/Memetico.o
 
 ###############################################################################
 #OBJETOS
@@ -143,20 +60,11 @@ $(OBJ)/random.o : $(INCLUDE)/random.h
 	$(CXX) -c -o $@ $(CXXFLAGS) $<
 	@echo
 
-$(OBJ)/Memetico.o : $(SRC)/Memetico.cpp $(INCLUDE)/funciones.h \
-$(INCLUDE)/Generacional.h $(INCLUDE)/BL.h  
-	@echo Creando $@
-	$(CXX) -c -o $@ $(CXXFLAGS) $<
-	@echo
 
-$(OBJ)/ILS.o : $(SRC)/ILS.cpp $(INCLUDE)/funciones.h \
-$(INCLUDE)/BL.h  $(INCLUDE)/ES.h
-	@echo Creando $@
-	$(CXX) -c -o $@ $(CXXFLAGS) $<
-	@echo
+
 
 $(OBJ)/BBO.o : $(SRC)/BBO.cpp $(INCLUDE)/funciones.h \
-$(INCLUDE)/Generacional.h $(INCLUDE)/BL.h $(INCLUDE)/ES.h
+ $(INCLUDE)/BL.h $(INCLUDE)/ES.h
 	@echo Creando $@
 	$(CXX) -c -o $@ $(CXXFLAGS) $<
 	@echo

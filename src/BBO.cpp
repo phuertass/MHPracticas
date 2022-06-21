@@ -238,11 +238,10 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     const int DIMENSION_PROBLEMA = m;
 
     // Numero maximo de generaciones creadas
-    const int TOPE_GENERACIONES = 100;
+    const int TOPE_GENERACIONES = 50;
 
     // Tamaño de la poblacion
     const int TAMANIO_POBLACION = poblacion.size();
-    // const int TAMANIO_POBLACION = 10;
 
     // Cantidad de mejores elementos que se quieren conservar entre generaciones
     const int NUMERO_ELITES = 0.05 * TAMANIO_POBLACION;
@@ -255,8 +254,7 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     // VARIABLES DE MIGRACION
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
-    const double PROB_MUTACION = 0.01;
-    const double alpha = 0.9;
+    const double PROB_MUTACION = 0.1;
     vector<double> mu(TAMANIO_POBLACION);
     vector<double> lambda(TAMANIO_POBLACION);
 
@@ -267,6 +265,7 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
         mu[i] = calculo;
         lambda[i] = 1 - calculo;
     }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,6 +279,9 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     // Generacion de la primera solucion aleatoria
     for (int i = 0; i < TAMANIO_POBLACION; i++)
     {
+        //AlgoritmoEnfriamientoSimulado(n,m,poblacion[i], matriz_datos, 100000);
+        Reparacion(n,m,poblacion[i], matriz_datos);
+
         BL(poblacion[i].seleccionados, vecindario, poblacion[i].dispersion, restantes, matriz_datos,
            poblacion[i].distancias, n);
     }
@@ -301,12 +303,15 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    // cout << "POBLACION AL INICIO " << poblacion << endl;
-
-
     for (int num_iteraciones = 0; num_iteraciones < TOPE_GENERACIONES; num_iteraciones++) // While stop criterion is not satisfied
     {
         GetElites(poblacion, elites, NUMERO_ELITES);
+
+        for (int i = 0; i < poblacion.size(); i++){
+            Reparacion(n,m,poblacion[i], matriz_datos);
+            //BL(poblacion[i].seleccionados, vecindario, poblacion[i].dispersion, restantes,
+            //matriz_datos,poblacion[i].distancias, n);
+        }
 
  
         for (int i = 0; i < TAMANIO_POBLACION; i++)
@@ -321,7 +326,6 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 if (Random::get<double>(0, 1) < lambda[i])
                 {
-                    // cout << "SOLUCION PREMIGRACION " << poblacion[i] << endl;
                     //  Realizamos la migracion
                     //  Seleccionamos una isla emigrante con probabilidad mu
                     vector<double> probabilidades_emigracion(mu);
@@ -337,10 +341,7 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
                     int busquedas=0;
                     while (busca && busquedas<100)
                     {
-                        //cout << "POSICION " << posicion << endl;
-                        //cout << "POBLACION I" << poblacion[i] << endl;
                         int elemento = poblacion[k].seleccionados[posicion];
-                        //cout << "ELEMENTO " << elemento << endl;
                         if (elemento > n)
                         {
                             cout << "Error" << endl;
@@ -353,9 +354,6 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
                         if (!poblacion[i].solucion[elemento])
                         {
                             busca = false;
-                            // cout << "Elemento nuevo: " << elemento << endl;
-                            // cout << "Elemento borrado: " << out << endl
-                            //      << endl;
 
                             for (int x = 0; x < poblacion[i].seleccionados.size(); x++)
                             {
@@ -401,14 +399,15 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
 
                 CalculoFuncionObjetivoCromosoma(poblacion[i], n, matriz_datos);
 
-                // cout << "SOLUCION TRAS MUTACION" << poblacion[i] << endl;
             }
         }
 
+        OrdenarPorFitness(poblacion);
         for (int i = 0; i < NUMERO_ELITES; i++)
             poblacion[TAMANIO_POBLACION - i - 1] = elites[i];
 
         OrdenarPorFitness(poblacion);
+
 
         if(GetMejor(poblacion, pos ).dispersion < mejor_encontrada.dispersion)
             mejor_encontrada = GetMejor(poblacion, pos);
@@ -417,11 +416,13 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
 
     OrdenarPorFitness(poblacion);
 
-    //#pragma omp parallel for num_threads(8) private(poblacion)
     for (int i = 0; i < poblacion.size(); i++){
         Reparacion(n,m,poblacion[i], matriz_datos);
+        //AlgoritmoEnfriamientoSimulado(n,m,poblacion[i], matriz_datos, 100000);
+        //Reparacion(n,m,poblacion[i], matriz_datos);
         BL(poblacion[i].seleccionados, vecindario, poblacion[i].dispersion, restantes,
            matriz_datos,poblacion[i].distancias, n);
+
     }
 
     CalculoFuncionObjetivo(poblacion, n, matriz_datos);
@@ -429,8 +430,5 @@ void AlgoritmoBBO(int n, int m, int semilla, const double probabilidad_mutacion,
 
     if(GetMejor(poblacion, pos ).dispersion < mejor_encontrada.dispersion)
         mejor_encontrada = GetMejor(poblacion, pos);
-    
-    cout << "Mejor solucion encontrada: " << mejor_encontrada << endl;
-    //exit(0);
-    // cout << "POBLACION FINALLLL " << poblacion << endl;
+
 }

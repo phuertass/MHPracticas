@@ -1,16 +1,23 @@
 \babel@toc {spanish}{}\relax 
 \contentsline {section}{\numberline {1}\large RESUMEN}{2}{section.1}%
-\contentsline {subsection}{\numberline {1.1}\normalsize Exploración vs Explotacion}{3}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}\normalsize Equilibrio}{3}{subsection.1.2}%
-\contentsline {section}{\numberline {2}\large ADAPTACION DEL BBO AL PROBLEMA DE LA MINIMA DISPERSION DIFERENCIAL}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}\large Descripción de la función objetivo}{4}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}\normalsize Descripción de los operadores comunes}{4}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}\small Generación de soluciónes aleatorias}{4}{subsubsection.2.2.1}%
-\contentsline {section}{\numberline {3}\large PROPUESTA DE MEJORA DE LA METAHEURISTICA}{5}{section.3}%
-\contentsline {subsection}{\numberline {3.1}\normalsize Hibridacion con Enfriamiento Simulado}{5}{subsection.3.1}%
-\contentsline {subsubsection}{\numberline {3.1.1}\scriptsize Algoritmo de Enfriamiento Simulado}{5}{subsubsection.3.1.1}%
-\contentsline {subsubsection}{\numberline {3.1.2}\scriptsize Operador de mutacion}{6}{subsubsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.2}\normalsize Hibridacion con Busqueda Local}{8}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}\scriptsize Busqueda Local}{8}{subsubsection.3.2.1}%
-\contentsline {section}{\numberline {4}\large ESTUDIO EXPERIMENTAL Y ANÁLISIS DE RESULTADOS}{10}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Tabla resumen}{12}{subsection.4.1}%
+\contentsline {subsection}{\numberline {1.1}\normalsize Algoritmo BBO}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}\normalsize Problema donde se prueba el BBO}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}\normalsize Exploración vs Explotacion}{6}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}\normalsize Equilibrio}{6}{subsection.1.4}%
+\contentsline {section}{\numberline {2}\large ADAPTACION DEL BBO AL PROBLEMA DE LA MINIMA DISPERSION DIFERENCIAL}{7}{section.2}%
+\contentsline {subsection}{\numberline {2.1}\large Descripción de la función objetivo}{8}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}\normalsize Descripción de los operadores comunes}{9}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}\small Generación de soluciones aleatorias}{9}{subsubsection.2.2.1}%
+\contentsline {section}{\numberline {3}\large PROPUESTA DE MEJORA DE LA METAHEURISTICA}{10}{section.3}%
+\contentsline {subsection}{\numberline {3.1}\normalsize Hibridacion con \\Enfriamiento Simulado}{10}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}\scriptsize Algoritmo de Enfriamiento Simulado}{10}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}\scriptsize Operador de mutacion}{12}{subsubsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.2}\normalsize Hibridacion con \\ Busqueda Local}{13}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}\scriptsize Busqueda Local}{13}{subsubsection.3.2.1}%
+\contentsline {section}{\numberline {4}\large ESTUDIO EXPERIMENTAL Y ANÁLISIS \\DE RESULTADOS}{16}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Tabla resumen}{18}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Analisis resultados BBO}{19}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}BBO sin hibridacion}{19}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}BBO con hibridacion BL}{19}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}BBO con hibridacion BL++}{19}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}BBO con hibridacion ES}{20}{subsubsection.4.2.4}%
