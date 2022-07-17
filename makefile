@@ -1,4 +1,4 @@
-#MAKEFILE PABLO HUERTAS ARROYO
+#MAKEFILE PABLO HUERTAS ARROYO 3 INGENIERIA INFORMATICA
 ###############################################################################
 HOME = .
 
